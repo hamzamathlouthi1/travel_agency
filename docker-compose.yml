@@ -1,0 +1,50 @@
+services:
+  user-service:
+    build:
+      context: ./services/user-service
+    image: agence/user-service:1.0.0
+    container_name: agence-user-service
+    restart: unless-stopped
+    ports:
+      # host:container — matches the docs/README (http://localhost:8081).
+      - "8081:8081"
+    env_file:
+      - .env
+    environment:
+      DB_URL: ${DB_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-86400000}
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8081/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    networks:
+      - agence-network
+
+  front:
+    build:
+      context: ./front
+    image: agence/front:1.0.0
+    container_name: agence-front
+    restart: unless-stopped
+    ports:
+      - "4200:4000"
+    environment:
+      PORT: 4000
+      # Internal Docker DNS name — the browser never sees this URL, it only
+      # ever calls the same-origin "/api" path, which the SSR server proxies
+      # to whichever service(s) sit behind it (see front/src/server.ts).
+      USER_SERVICE_URL: http://user-service:8081
+    depends_on:
+      user-service:
+        condition: service_healthy
+    networks:
+      - agence-network
+
+networks:
+  agence-network:
+    driver: bridge

@@ -1,0 +1,28 @@
+// Global stylesheet entry point (referenced from angular.json).
+@use "reset";
+@use "tokens";
+@use "typography";
+@use "utilities";
+
+html {
+  font-family: var(--font-family-base);
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+}
+
+body {
+  background: var(--color-surface);
+}
+
+a {
+  color: var(--color-link);
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}

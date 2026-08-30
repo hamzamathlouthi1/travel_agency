@@ -1,0 +1,46 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: user-service
+
+  datasource:
+    # Ces valeurs sont injectées via variables d'environnement (voir docker-compose.yml / .env)
+    # Format d'URL Neon : jdbc:postgresql://<host>/<database>?sslmode=require
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/agence_user_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
+      connection-timeout: 20000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:ChangeMeThisIsADevOnlySecretKeyPleaseReplaceInProd123456}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
+logging:
+  level:
+    com.agence.userservice: DEBUG
+    org.springframework.security: INFO
