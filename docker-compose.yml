@@ -1,0 +1,65 @@
+services:
+  user-service:
+    build:
+      context: ./services/user-service
+    image: agence/user-service:1.0.0
+    container_name: agence-user-service
+    restart: unless-stopped
+    ports:
+      # host:container — matches the docs/README (http://localhost:8081).
+      - "8081:8081"
+    env_file:
+      - .env
+    environment:
+      DB_URL: ${DB_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-86400000}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-no-reply@agence.local}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-Agence Travel}
+      EMAIL_CODE_EXPIRATION_MINUTES: ${EMAIL_CODE_EXPIRATION_MINUTES:-10}
+      FRONTEND_ORIGINS: ${FRONTEND_ORIGINS:-http://localhost:4200,http://localhost:4000}
+      AUTH_RATE_LIMIT_MAX: ${AUTH_RATE_LIMIT_MAX:-20}
+      AUTH_RATE_LIMIT_WINDOW_SECONDS: ${AUTH_RATE_LIMIT_WINDOW_SECONDS:-60}
+      JPA_DDL_AUTO: ${JPA_DDL_AUTO:-update}
+      JPA_SHOW_SQL: ${JPA_SHOW_SQL:-false}
+      APP_LOG_LEVEL: ${APP_LOG_LEVEL:-INFO}
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8081/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    networks:
+      - agence-network
+
+  front:
+    build:
+      context: ./front
+    image: agence/front:1.0.0
+    container_name: agence-front
+    restart: unless-stopped
+    ports:
+      - "4200:4000"
+    environment:
+      PORT: 4000
+      # Internal Docker DNS name — the browser never sees this URL, it only
+      # ever calls the same-origin "/api" path, which the SSR server proxies
+      # to whichever service(s) sit behind it (see front/src/server.ts).
+      USER_SERVICE_URL: http://user-service:8081
+    depends_on:
+      user-service:
+        condition: service_healthy
+    networks:
+      - agence-network
+
+networks:
+  agence-network:
+    driver: bridge

@@ -1,0 +1,54 @@
+// Global stylesheet entry point (referenced from angular.json).
+@use "reset";
+@use "tokens";
+@use "typography";
+@use "utilities";
+
+html {
+  font-family: var(--font-family-base);
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--color-surface);
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+app-root {
+  display: block;
+  min-width: 0;
+}
+
+// Prevent long labels, URLs, and unbroken API content from widening a page on
+// small screens. Form controls also need an explicit max-width in grid/flex
+// layouts on mobile Safari.
+button,
+input,
+select,
+textarea {
+  max-width: 100%;
+}
+
+p,
+h1,
+h2,
+h3,
+h4 {
+  overflow-wrap: anywhere;
+}
+
+a {
+  color: var(--color-link);
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}

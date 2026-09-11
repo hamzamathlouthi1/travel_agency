@@ -1,0 +1,8 @@
+node_modules
+dist
+.angular
+graphify-out
+.claude
+.agents
+.git
+*.log

@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "user-service (UserServiceApplication)",
+      "request": "launch",
+      "mainClass": "com.agence.userservice.UserServiceApplication",
+      "projectName": "user-service",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}

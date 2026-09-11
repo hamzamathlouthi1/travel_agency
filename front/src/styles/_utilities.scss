@@ -1,0 +1,46 @@
+// Small set of genuinely cross-cutting utility classes. Not a utility-class
+// framework — component styles remain scoped SCSS; these exist only for the
+// handful of layout primitives every feature needs.
+@use 'tokens';
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+}
+
+@media (min-width: tokens.$breakpoint-md) {
+  .container {
+    padding-inline: var(--space-6);
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  inset-block-start: var(--space-2);
+  inset-inline-start: var(--space-2);
+  z-index: var(--z-tooltip);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-ink-950);
+  color: var(--color-text-inverse);
+  border-radius: var(--radius-sm);
+  transform: translateY(-150%);
+  transition: transform var(--transition-fast);
+
+  &:focus-visible {
+    transform: translateY(0);
+  }
+}
